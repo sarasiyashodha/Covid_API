@@ -1,4 +1,5 @@
 import 'package:covid_api/models/covid_data_model.dart';
+import 'package:covid_api/models/pcr_model.dart';
 import 'package:covid_api/services/api_service.dart';
 import 'package:flutter/material.dart';
 
@@ -41,62 +42,99 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
-      body: FutureBuilder(
-        future: service.getData(),
-        builder: (context, snapshot){
-          if(snapshot.hasData) {
-            CovidDataModel data = snapshot.data!;
-            return SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Icon(Icons.menu),
-                        Text('Covid 19',
-                          style: TextStyle(
-                              fontSize: 24.0,
-                              fontWeight: FontWeight.w700
+      body: SingleChildScrollView(
+        child: FutureBuilder(
+          future: service.getData(),
+          builder: (context, snapshot){
+            if(snapshot.hasData) {
+              CovidDataModel data = snapshot.data!;
+              List<PcrData> pcrDataList = data.pcrData!;
+              return SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Icon(Icons.menu),
+                          Text('Covid 19',
+                            style: TextStyle(
+                                fontSize: 24.0,
+                                fontWeight: FontWeight.w700
+                            ),
                           ),
-                        ),
-                        Icon(Icons.add_location)
+                          Icon(Icons.add_location)
 
-                      ],
-                    ),
-                    SizedBox(
-                      height: 20.0,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CustomContainer(
-                          size: size, title: 'Total Deaths', color: Colors.red, value: data.totalDeaths!,),
-                        CustomContainer(size: size, title: 'Total Recovered', value: data.totalRecovered!, color: Colors.green)
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CustomContainer(
-                          size: size, title: 'Active cases', color: Colors.blue, value: data.activeCases!,),
-                        CustomContainer(size: size, title: 'Total Cases', value: data.totalCases!, color: Colors.amber.shade800)
-                      ],
-                    )
+                        ],
+                      ),
+                      SizedBox(
+                        height: 20.0,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CustomContainer(
+                            size: size, title: 'Total Deaths', color: Colors.red, value: data.totalDeaths!,),
+                          CustomContainer(size: size, title: 'Total Recovered', value: data.totalRecovered!, color: Colors.green)
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CustomContainer(
+                            size: size, title: 'Active cases', color: Colors.blue, value: data.activeCases!,),
+                          CustomContainer(size: size, title: 'Total Cases', value: data.totalCases!, color: Colors.amber.shade800)
+                        ],
+                      ),
+                      Text('Daily Pcr Tests',
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.w800
+
+                        ),),
+                      ListView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: pcrDataList.length,
+                          itemBuilder: (context, index){
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(pcrDataList[index].date!,
+                                    style: TextStyle(
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.bold
+                                    ),
+                                  ),
+                                  Text(pcrDataList[index].count!,
+                                    style: TextStyle(
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.bold
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+
+                      )
 
 
-                  ],
+                    ],
+                  ),
                 ),
-              ),
+              );
+
+            }
+            return Center(
+              child: CircularProgressIndicator(),
             );
 
-          }
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-
-        },
+          },
+        ),
       )
     );
   }

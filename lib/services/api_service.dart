@@ -13,8 +13,8 @@ class ApiService {
     if(response.statusCode == 200) {
       Map<String, dynamic> body = jsonDecode(response.body);
       Map<String, dynamic> data = body["data"];
-      CovidDataModel covidaData = CovidDataModel.fromJson(data);
-      return covidaData;
+      CovidDataModel covidData = CovidDataModel.fromJson(data);
+      return covidData;
     }
     else{
       throw Exception(response.statusCode);
